@@ -110,7 +110,7 @@ build_repo()
 	test -n "${REPO}" || die "Invalid REPO"
 	test -n "${TAG}" || die "Invalid TAG"
 
-	if ! repo_exists "${REPO}" "${TAG}"; then
+	if ! repo_exists "${NAMESPACE}/${REPO}" "${TAG}"; then
 		env -i \
 			NAMESPACE="${NAMESPACE}" \
 			TAG="${TAG}" \
