@@ -9,7 +9,7 @@ DIR=${DIR:-$(realpath "$(dirname $0)")}
 
 # Update gentoo and portage container
 ${DIR}/build.sh gentoo && \
-${DIR}/build.sh portage && \
+${DIR}/build.sh portage || exit 1
 docker rm portage
 if [ -z "$(docker ps -a|grep portage)" ]; then
   docker run -v /usr/portage --name portage ${NAMESPACE}/portage true
