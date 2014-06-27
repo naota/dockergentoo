@@ -11,4 +11,6 @@ DIR=${DIR:-$(realpath "$(dirname $0)")}
 ${DIR}/build.sh gentoo && \
 ${DIR}/build.sh portage && \
 docker rm portage
-docker run -v /usr/portage --name portage ${NAMESPACE}/portage true
+if [ -z "$(docker ps -a|grep portage)" ]; then
+  docker run -v /usr/portage --name portage ${NAMESPACE}/portage true
+fi
