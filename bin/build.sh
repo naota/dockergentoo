@@ -133,10 +133,12 @@ case "${ACTION}" in
 gentoo) build_gentoo ;;
 portage)
 	build_portage
-	extract_busybox portage
 	PORTAGE_DATE=$(${DOCKER} images "${NAMESPACE}/portage-import" |
 	    ${PERL} -ne '@a=split; if($a[1] ne "latest" && $a[1] ne "TAG"){print $a[1],"\n"; exit}')
-	build_repo portage ${PORTAGE_DATE}
+	if ! repo_exists "${NAMESPACE}/portage" "${PORTAGE_DATE}"; then
+	  extract_busybox portage
+	  build_repo portage ${PORTAGE_DATE}
+  fi
 	;;
 busybox)
 	extract_busybox tmp
