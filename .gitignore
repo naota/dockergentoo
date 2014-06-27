@@ -2,3 +2,4 @@ Dockerfile
 files/
 result/
 tmp/
+portage/busybox
