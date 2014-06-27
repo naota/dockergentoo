@@ -5,9 +5,10 @@ test -n "${DOCKER_GENTOO_CONFIG}" && \
   source "${DOCKER_GENTOO_CONFIG}"
 
 NAMESPACE=${NAMESPACE:-$(whoami)}
+DIR=${DIR:-$(realpath "$(dirname $0)")}
 
 # Update gentoo and portage container
-./build.sh gentoo && \
-./build.sh portage && \
+${DIR}/build.sh gentoo && \
+${DIR}/build.sh portage && \
 docker rm portage
 docker run -v /usr/portage --name portage ${NAMESPACE}/portage true
