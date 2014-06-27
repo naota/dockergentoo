@@ -1,0 +1,8 @@
+FROM ${NAMESPACE}/busybox:${TAG}
+MAINTAINER ${MAINTAINER}
+
+RUN ln /bin/sh /bin/busybox
+RUN ln /bin/busybox /bin/true
+RUN mkdir -p /usr/portage/distfiles /usr/portage/packages
+VOLUME ["/usr/portage/distfiles", "/usr/portage/packages"]
+CMD "/bin/true"

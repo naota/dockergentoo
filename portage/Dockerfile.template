@@ -1,0 +1,11 @@
+FROM ${NAMESPACE}/portage-import:${TAG}
+MAINTAINER ${MAINTAINER}
+
+ADD busybox /bin/sh
+RUN ln /bin/sh /bin/busybox
+RUN ln /bin/busybox /bin/true
+RUN mkdir /usr/
+RUN mv /portage /usr/portage
+RUN mkdir /usr/portage/distfiles /usr/portage/packages
+VOLUME ["/usr/portage"]
+CMD "/bin/true"
