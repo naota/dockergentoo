@@ -19,5 +19,13 @@ if [ -n "$flaggie" ]; then
   emerge -1k flaggie || exit 1
   eval "flaggie $flaggie" || exit 1
 fi
-CONFIG_PROTECT='-*' emerge -p --autounmask-write $package && \
-  (emerge -1k $package || putlog)
+export CONFIG_PROTECT='-/etc'
+before_emerge=$(find /etc/portage -ls | sha1sum)
+emerge -1k --autounmask-write $package
+result=$?
+after_emerge=$(find /etc/portage -ls | sha1sum)
+if [ "${before_emerge}" = "${after_emerge}" ]; then
+  test "${result}" = "0" || putlog
+else
+  emerge -1k ${package} || putlog
+fi
