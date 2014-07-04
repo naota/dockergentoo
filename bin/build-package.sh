@@ -8,9 +8,12 @@ NAMESPACE=${NAMESPACE:-$(whoami)}
 DIR=${DIR:-$(realpath "$(dirname $0)/..")}
 flag=$1
 package=$2
+overlay=$3
 
+volumes="-v ${DIR}/build:/build -v ${DIR}/result:/result "
+test -n "${overlay}" && volumes="${volumes} -v ${overlay}:/overlay "
 mkdir -p ${DIR}/build ${DIR}/result
 docker run -i -t --rm \
   --volumes-from portage --volumes-from distfiles \
-  -v ${DIR}/build:/build -v ${DIR}/result:/result \
+  ${volumes} \
   ${NAMESPACE}/gentoo bash /build/dockerbuild.sh "${flag}" "${package}"
