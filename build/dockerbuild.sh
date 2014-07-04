@@ -15,7 +15,7 @@ test -n "${package}" || exit 1
 
 ln -sf /proc/self/fd /dev/fd && \
 eselect news read new >/dev/null
-export FEATURES=buildpkg
+export FEATURES="buildpkg parallel-install"
 export ACCEPT_KEYWORDS="~amd64 amd64"
 if [ -n "$flaggie" ]; then
   emerge -1k flaggie || exit 1
