@@ -10,6 +10,11 @@ flag=$1
 package=$2
 overlay=$3
 
+if [ -z "${package}" ]; then
+  echo "Usage: $0 <flags> <package> [<overlay>]"
+  exit 1
+fi
+
 volumes="-v ${DIR}/build:/build -v ${DIR}/result:/result "
 test -n "${overlay}" && volumes="${volumes} -v ${overlay}:/overlay "
 mkdir -p ${DIR}/build ${DIR}/result
