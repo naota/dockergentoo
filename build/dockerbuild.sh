@@ -24,11 +24,11 @@ fi
 test -d /overlay && export PORTDIR_OVERLAY="/overlay"
 export CONFIG_PROTECT='-/etc'
 before_emerge=$(find /etc/portage -ls | sha1sum)
-emerge -1k --autounmask-write $package
+emerge -1k -j2 --autounmask-write $package
 result=$?
 after_emerge=$(find /etc/portage -ls | sha1sum)
 if [ "${before_emerge}" = "${after_emerge}" ]; then
   test "${result}" = "0" || putlog
 else
-  emerge -1k ${package} || putlog
+  emerge -1k -j2 ${package} || putlog
 fi
