@@ -19,6 +19,7 @@ if [ -n "$flaggie" ]; then
   emerge -1k flaggie || exit 1
   eval "flaggie $flaggie" || exit 1
 fi
+test -d /overlay && export PORTDIR_OVERLAY="/overlay"
 export CONFIG_PROTECT='-/etc'
 before_emerge=$(find /etc/portage -ls | sha1sum)
 emerge -1k --autounmask-write $package
