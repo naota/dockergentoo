@@ -11,6 +11,8 @@ putlog() {
 flaggie=$1
 package=$2
 
+test -n "${package}" || exit 1
+
 ln -sf /proc/self/fd /dev/fd && \
 eselect news read new >/dev/null
 export FEATURES=buildpkg
