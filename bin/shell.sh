@@ -11,4 +11,4 @@ mkdir -p ${DIR}/build ${DIR}/result
 docker run -i -t --rm \
   --volumes-from portage --volumes-from distfiles \
   -v ${DIR}/build:/build -v ${DIR}/result:/result \
-  ${NAMESPACE}/gentoo bash 
+  ${NAMESPACE}/gentoo bash
