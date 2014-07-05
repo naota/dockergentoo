@@ -45,6 +45,38 @@ $ ./bin/build-package.sh '' 'pficommon'
 失敗した場合、 "results/"以下に/var/tmp/portage以下をtar.xz形式で固めた
 ものが出力される。失敗した場合はこれを見てデバッグができるというわけ。
 
+# 自分のebuildをテストしたい
+
+build-package.sh はPortageツリーに入っているものだけをテスト可能で、自
+分のebuildのテストには使えない。そういう時は test-ebuild.sh を使う。
+
+```
+$ ./bin/test-ebuild.sh <flag> <ebuild file>
+e.g.
+$ ./bin/test-ebuild.sh '' 'foo-2.3.0.ebuild'
+```
+
+こうすると自分の書いたfoo-2.3.0.ebuildをふくむようなoverlayが構築されて、
+コンテナの中で/overlayで見えるようになる。なおかつ、自動的に
+PORTDIR_OVERLAYのパスも通り、foo-2.3.0.ebuildに対応するようにemergeを実
+行してくれる。
+
+# USEフラグ以外にも設定したい
+
+emergeの前準備はだいたいUSEフラグの設定ぐらいですむのだけれど、時々それ
+だけでは足りないこともある。他にもデバッグ用に環境を作りたいこともある。
+そんな時のために shell.sh が使えるようになっている。
+
+```
+$ ./bin/shell.sh [<ebuild>]
+```
+
+これでshell環境に入ることができる。 ebuildを指定した場合には、その
+ebuildをふくむoverlaysが/overlayにできている。/build/dockerbuild.sh
+<flag> <package> するとバイナリを使ったり作ったりフラグを立てたりといっ
+た作業をしてくれる。(ようするにbuild-package.shはコンテナの中でこのスク
+リプトを叩いているだけ)
+
 # 時々やること
 
 update.shはその名が語るように、"gentoo"と"portage"のコンテナイメージを
