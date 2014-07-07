@@ -2,10 +2,12 @@
 
 putlog() {
   local x=${RANDOM}
-  mkdir /result/${x}
-  cd /var/tmp
-  tar Jcf /result/${x}/portage.tar.xz portage
-  echo The result put into result/${x}
+  if [ -d /var/tmp/portage ]; then
+      mkdir /result/${x}
+      cd /var/tmp
+      tar Jcf /result/${x}/portage.tar.xz portage
+      echo The result put into result/${x}
+  fi
 }
 
 flaggie=$1
