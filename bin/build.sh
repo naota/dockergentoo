@@ -14,6 +14,9 @@ STAGE3_TEXT=latest-stage3-amd64.txt
 STAGE3_TEXT_URL=${SERVER}${STAGE3_PREFIX}${STAGE3_TEXT}
 PORTAGE_PREFIX=/snapshots/
 PORTAGE_TEXT_URL=${SERVER}${PORTAGE_PREFIX}
+GPG_KEYSERVER=${GPG_KEYSERVER:-pgp.mit.edu}
+GPG_KEYID_STAGE3=${GPG_KEYID_STAGE3:-0x2D182910}
+GPG_KEYID_PORTAGE=${GPG_KEYID_PORTAGE:-0x96D8BF6D}
 
 AWK=${AWK:-$(command -v awk)}
 CURL=${CURL:-$(command -v curl)}
@@ -39,6 +42,12 @@ die() {
     exit 1
 }
 
+fetchkey() {
+    key=$1
+    ${GPG} -k ${key} >/dev/null || \
+	${GPG} --keyserver ${GPG_KEYSERVER} --recv-key ${key} || die "Failed to fetch key"
+}
+
 test -n "${NAMESPACE}" || die "Please set NAMESPACE"
 test -n "${MAINTAINER}"  || die "Please set MAINTAINER"
 
@@ -56,6 +65,7 @@ build_gentoo() {
       mkdir -p "${FILES}"
       ${WGET} -c ${STAGE3_URL} -P "${FILES}" || die "Failed to download stage3 file"
       ${WGET} -c ${STAGE3_DIGESTS_URL} -P "${FILES}" || die "Failed to download stage3 digest file"
+      fetchkey ${GPG_KEYID_STAGE3}
       ${GPG} --verify "${FILES}/${STAGE3_DIGESTS_FILENAME}" || die "Insecure digests"
 
       local SHA512_HASHES=$(${GREP} -A 1 "# SHA512 HASH" "${FILES}/${STAGE3_DIGESTS_FILENAME}" | head -n 2)
@@ -84,6 +94,7 @@ build_portage() {
     if ! repo_exists "${NAMESPACE}/portage-import" "${DATE}"; then
       ${WGET} -c ${PORTAGE_URL} -P "${FILES}" || die "Failed to download portage file"
       ${WGET} -c ${PORTAGE_GPGSIG_URL} -P "${FILES}" || die "Failed to download portage signature file"
+      fetchkey ${GPG_KEYID_PORTAGE}
       ${GPG} --verify "${FILES}/${PORTAGE_GPGSIG_FILENAME}" "${FILES}/${PORTAGE_FILENAME}" || die "Insecure digests"
       ${DOCKER} import - "${NAMESPACE}/portage-import:${DATE}" \
         < "${FILES}/${PORTAGE_FILENAME}" || die "failed to import"
