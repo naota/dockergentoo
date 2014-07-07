@@ -18,7 +18,7 @@ eselect news read new >/dev/null
 export FEATURES="buildpkg parallel-install"
 export ACCEPT_KEYWORDS="~amd64 amd64"
 if [ -n "$flaggie" ]; then
-  emerge -1k flaggie || exit 1
+  emerge -1k -j2 flaggie || exit 1
   eval "flaggie $flaggie" || exit 1
 fi
 test -d /overlay && export PORTDIR_OVERLAY="/overlay"
