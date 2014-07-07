@@ -21,3 +21,10 @@ if [ -z "${RUNNING}" -o "${RUNNING}" != "${LATEST}" ]; then
   fi
   docker run -v /usr/portage --name portage ${NAMESPACE}/portage true
 fi
+
+RUNNING=$(docker ps -a | grep "${NAMESPACE}/distfiles" | awk '{print $2}')
+if [ -z "${RUNNING}" ]; then
+  ${DIR}/build.sh busybox
+  ${DIR}/build.sh distfiles
+  docker run -v /usr/portage/distfiles -v /usr/portage/packages --name distfiles ${NAMESPACE}/distfiles true
+fi
