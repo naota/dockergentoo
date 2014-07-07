@@ -24,11 +24,13 @@ fi
 test -d /overlay && export PORTDIR_OVERLAY="/overlay"
 export CONFIG_PROTECT='-/etc'
 before_emerge=$(find /etc/portage -ls | sha1sum)
-emerge -1k -j2 --autounmask-write $package
+exclude=$(qatom ${package} | awk '{if($1 == "(null)"){print $2}else{printf("%s/%s\n",$1,$2)}}')
+common_args="-1k -j2 --usepkg-exclude ${exclude} "
+emerge ${common_args} --autounmask-write $package
 result=$?
 after_emerge=$(find /etc/portage -ls | sha1sum)
 if [ "${before_emerge}" = "${after_emerge}" ]; then
   test "${result}" = "0" || putlog
 else
-  emerge -1k -j2 ${package} || putlog
+  emerge ${common_args} ${package} || putlog
 fi
