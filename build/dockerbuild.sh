@@ -23,6 +23,7 @@ if [ -n "$flaggie" ]; then
 fi
 test -d /overlay && export PORTDIR_OVERLAY="/overlay"
 export CONFIG_PROTECT='-/etc'
+export PORTAGE_ELOG_CLASSES="*"
 before_emerge=$(find /etc/portage -ls | sha1sum)
 exclude=$(qatom ${package} | awk '{if($1 == "(null)"){print $2}else{printf("%s/%s\n",$1,$2)}}')
 common_args="-1k -j2 --usepkg-exclude ${exclude} "
