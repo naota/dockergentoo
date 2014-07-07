@@ -11,21 +11,13 @@
 まずはstage3だけからなる"gentoo"というコンテナイメージと、Portageツリー
 を提供する"portage"というデータコンテナイメージを構築し、"portage"とい
 うコンテナを実行する。 Dockerfileを構築するために MAINTAINER環境変数に
-自分の情報を設定する。この設定がコンテナのメンテナとして使われる。
-./bin/update.sh が2つのコンテナを構築する。
+自分の情報を設定する。この設定がコンテナのメンテナとして使われる。また、
+"distfiles"というソースコードおよびバイナリパッケージを保管するコンテナ
+も作って実行しておく。全て、update.shがよしなにやってくれる。
 
 ```
 $ export MAINTAINER="Naohiro Aota <naota@gentoo.org>"
 $ ./bin/update.sh
-```
-
-次にdistfiles(ソースコード保管ディレクトリ)とpackages(バイナリパッケー
-ジ保管ディレクトリ)として機能する"distfiles"というコンテナを構築し、実
-行する。
-
-```
-$ ./bin/build.sh distfiles
-$ docker run -v /usr/portage/distfiles -v /usr/portage/packages --name distfiles ${NAMESPACE}/distfiles true
 ```
 
 # コンテナの中でのemerge
