@@ -13,7 +13,7 @@ package=$2
 
 test -n "${package}" || exit 1
 
-ln -sf /proc/self/fd /dev/fd && \
+test -e /dev/fd || ln -sf /proc/self/fd /dev/fd
 eselect news read new >/dev/null
 export FEATURES="buildpkg parallel-install"
 export ACCEPT_KEYWORDS="~amd64 amd64"
