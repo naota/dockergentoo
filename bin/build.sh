@@ -23,7 +23,6 @@ CURL=${CURL:-$(command -v curl)}
 DOCKER=${DOCKER:-$(command -v docker)}
 GPG=${GPG:-$(command -v gpg)}
 GREP=${GREP:-$(command -v grep)}
-PERL=${PERL:-$(command -v perl)}
 REALPATH=${REALPATH:-$(command -v realpath)}
 SHA512SUM=${SHA512SUM:-$(command -v sha512sum)}
 TAIL=${TAIL:-$(command -v tail)}
@@ -81,7 +80,7 @@ build_gentoo() {
 
 build_portage() {
     local PORTAGE=$(${CURL} ${PORTAGE_TEXT_URL} | \
-      ${PERL} -ne 'if(m!href="(portage-\d+.tar.xz)"!){print "$1\n"}' | \
+      ${AWK} 'match($0, /href="portage-[0-9]+.tar.xz"/){print substr($0,RSTART+6,RLENGTH-7)}' | \
       tail -n 1)
     local PORTAGE_URL=${SERVER}${PORTAGE_PREFIX}${PORTAGE}
     local PORTAGE_GPGSIG_URL=${SERVER}${PORTAGE_PREFIX}${PORTAGE}.gpgsig
@@ -145,7 +144,7 @@ gentoo) build_gentoo ;;
 portage)
 	build_portage
 	PORTAGE_DATE=$(${DOCKER} images "${NAMESPACE}/portage-import" |
-	    ${PERL} -ne '@a=split; if($a[1] ne "latest" && $a[1] ne "TAG"){print $a[1],"\n"; exit}')
+	    ${AWK} '$2 != "latest" && $2 != "TAG"{print $2;exit}')
 	if ! repo_exists "${NAMESPACE}/portage" "${PORTAGE_DATE}"; then
 	  extract_busybox portage
 	  build_repo portage ${PORTAGE_DATE}
@@ -155,16 +154,16 @@ busybox)
 	extract_busybox tmp
   cd tmp; mkdir -p bin; mv -f busybox bin/sh
 	STAGE3_DATE=$(${DOCKER} images "${NAMESPACE}/gentoo" |
-	    ${PERL} -ne '@a=split; if($a[1] ne "latest" && $a[1] ne "TAG"){print $a[1],"\n"; exit}')
+	    ${AWK} '$2 != "latest" && $2 != "TAG"{print $2;exit}')
   test -z "${STAGE3_DATE}" && die "No stage3 date"
   ${TAR} cf - bin | ${DOCKER} import - "${NAMESPACE}/busybox:${STAGE3_DATE}" || die "failed to import"
   ${DOCKER} tag -f ${NAMESPACE}/busybox:${STAGE3_DATE} ${NAMESPACE}/busybox:latest || die "failed to tag"
 	;;
 *)
 	STAGE3_DATE=$(${DOCKER} images "${NAMESPACE}/gentoo" |
-	    ${PERL} -ne '@a=split; if($a[1] ne "latest" && $a[1] ne "TAG"){print $a[1],"\n"; exit}')
+	    ${AWK} '$2 != "latest" && $2 != "TAG"{print $2;exit}')
 	PORTAGE_DATE=$(${DOCKER} images "${NAMESPACE}/portage-import" |
-	    ${PERL} -ne '@a=split; if($a[1] ne "latest" && $a[1] ne "TAG"){print $a[1],"\n"; exit}')
+	    ${AWK} '$2 != "latest" && $2 != "TAG"{print $2;exit}')
 	if [ -d "${ACTION}" ]; then
 	    build_repo "${ACTION}" "${STAGE3_DATE}"
 	else
