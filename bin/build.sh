@@ -28,6 +28,7 @@ SHA512SUM=${SHA512SUM:-$(command -v sha512sum)}
 TAIL=${TAIL:-$(command -v tail)}
 TAR=${TAR:-$(command -v tar)}
 WGET=${WGET:-$(command -v wget)}
+SED=${SED:-$(command -v sed)}
 
 repo_exists()
 {
@@ -121,16 +122,7 @@ build_repo()
 	test -n "${TAG}" || die "Invalid TAG"
 
 	if ! repo_exists "${NAMESPACE}/${REPO}" "${TAG}"; then
-		env -i \
-			NAMESPACE="${NAMESPACE}" \
-			TAG="${TAG}" \
-			MAINTAINER="${MAINTAINER}" \
-			envsubst '
-				${NAMESPACE}
-				${TAG}
-				${MAINTAINER}
-				' \
-				< "${REPO}/Dockerfile.template" > "${REPO}/Dockerfile"
+		${SED} -e "s/\${NAMESPACE}/${NAMESPACE}/" -e "s/\${TAG}/${TAG}/" -e "s/\${MAINTAINER}/${MAINTAINER}/" "${REPO}/Dockerfile.template" > "${REPO}/Dockerfile"
 
 		"${DOCKER}" build -t "${NAMESPACE}/${REPO}:${TAG}" "${REPO}" || die "failed to build"
 	fi
