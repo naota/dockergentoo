@@ -48,7 +48,7 @@ fi
 
 RUNNING=$(docker ps -a | grep "${NAMESPACE}/distfiles" | awk '{print $2}')
 if [ -z "${RUNNING}" ]; then
-  ${DIR}/build.sh busybox
-  ${DIR}/build.sh distfiles
+  ${DIR}/build.sh busybox && \
+    ${DIR}/build.sh distfiles || exit 1
   docker run -v /usr/portage/distfiles -v /usr/portage/packages --name distfiles ${NAMESPACE}/distfiles true
 fi
