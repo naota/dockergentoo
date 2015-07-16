@@ -77,7 +77,7 @@ test -n "${NAMESPACE}" || die "Please set NAMESPACE"
 test -n "${MAINTAINER}"  || die "Please set MAINTAINER"
 
 build_gentoo() {
-    local STAGE3=$(${CURL} ${STAGE3_TEXT_URL} | ${GREP} -v '#')
+    local STAGE3=$(${CURL} ${STAGE3_TEXT_URL} | ${GREP} -v '#' | ${AWK} '{print $1}')
     local STAGE3_URL=${SERVER}${STAGE3_PREFIX}${STAGE3}
     local STAGE3_DIGESTS_URL=${SERVER}${STAGE3_PREFIX}${STAGE3}.DIGESTS.asc
     local STAGE3_FILENAME=$(basename ${STAGE3})
